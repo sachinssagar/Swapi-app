@@ -6,16 +6,24 @@ function StarWarsCharacters() {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchCharacters() {
       try {
         const response = await fetch("https://swapi.dev/api/people");
+        if (!response.ok) {
+          throw new Error(
+            "Oops! Something went wrong. Please try again later."
+          );
+        }
         const data = await response.json();
         setCharacters(data.results);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching characters:", error);
+        setError(error.message);
+        setLoading(false);
       }
     }
 
@@ -41,6 +49,8 @@ function StarWarsCharacters() {
       </div>
       {loading ? (
         <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
       ) : (
         <>
           <div className="character-cards">
